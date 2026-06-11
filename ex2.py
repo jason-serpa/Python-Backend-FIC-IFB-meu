@@ -20,8 +20,13 @@ concluída e Sair do programa.
 
 def Adicionar(tarefas):
     desc = input("Insira uma descrição para a tarefa:\n")
-    priority = input("Insira a prioridade da tarefa:\n")
+    priority = int(input("Insira a prioridade da tarefa:\n"))
     status = input("Insira o status da tarefa:\n")
+    if priority > 5 or priority < 1:
+        print("Prioridade inválida, adicionando novamente...")
+        return Adicionar(tarefas)
+    else:
+        pass
     if status == "":
         tarefas.append([desc, priority, "Pendente"])
     else:
@@ -31,10 +36,12 @@ def Adicionar(tarefas):
 
 def Listar(tarefas):
     contagem = 1
-    for item in tarefas:
-        print(f"Tarefa {contagem}: {item}")
-        contagem += 1
-        
+    for i in range(5):
+        print(f"Tarefas de prioridade {i}:\n")
+        for item in tarefas:
+            print(f"Tarefa {contagem}: {item}")
+            contagem += 1
+            
     return
 
 def Marcar(tarefas):
@@ -71,7 +78,7 @@ Escolha uma opção:
         elif escolha == 3:
             tarefas = Marcar(tarefas)
         elif escolha == 4:
-            Sair()
+            raise Exception
         else:
             print("Escolha inválida, reiniciando programa...")
             return main()
