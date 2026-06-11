@@ -1,0 +1,30 @@
+def Iniciar():
+    try:
+        nome = input("Insira seu nome:\n")
+        notaUm = float(input("Insira a primeira nota:\n"))
+        notaDois = float(input("Insira a segunda nota:\n"))
+        notaTres = float(input("Insira a terceira nota:\n"))
+        if nome == "DEBUG":
+            PESO_UM = float(input("Defina o peso da primeira nota:\n"))
+            PESO_DOIS = float(input("Defina o peso da segunda nota:\n"))
+            PESO_TRES = float(input("Defina o peso da terceira nota:\n"))
+        else:
+            PESO_UM = PESO_DOIS = PESO_TRES = 1
+            
+        somaPesos = PESO_UM + PESO_DOIS + PESO_TRES
+        mediaPonderada = (notaUm * PESO_UM + notaDois * PESO_DOIS + notaTres * PESO_TRES) / somaPesos
+        return mediaPonderada, nome
+    except Exception:
+        print("Algo deu errado, tente novamente")
+        return Iniciar()
+
+mediaPonderada, nome = Iniciar()
+if mediaPonderada < 5:
+    print(f"{nome}, infelizmente você está de recuperação!")
+    
+elif mediaPonderada < 6:
+    print(f"Parabéns, {nome}, foi aprovado!")
+elif mediaPonderada <= 10:
+    print(f"Parabéns, {nome}, está aprovadíssimo!")
+else:
+    print("Nota fora do intervalo válido. Inicie novamente.")
