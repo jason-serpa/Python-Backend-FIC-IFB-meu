@@ -42,7 +42,7 @@ def remover(lista):
             
 
 def ex5():
-    import time
+    from time import sleep
     lista = []
     while True:
         i = int(input('''
@@ -57,7 +57,6 @@ Escolha uma opção.
 > '''))
         
         if i == 1:
-            print("1")
             lista = adicionar(lista)
         elif i == 2:
             listar(lista)
@@ -66,13 +65,7 @@ Escolha uma opção.
         elif i == 4:
             print("Saindo...")
             break
-        
-            
-        #except KeyboardInterrupt:
-        #    break
-        #except:
-        #    print("Algo deu errado, tente novamente.")
-        time.sleep(1)
+        sleep(1)
             
 
 if __name__ == "__main__":

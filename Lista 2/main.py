@@ -4,7 +4,7 @@ from listaDoisEx03 import *
 from listaDoisEx04 import *
 from listaDoisEx05 import *
 from listaDoisEx06 import *
-from time import sleep as sl
+from time import sleep
 print('''Ex. 1. 
 Crie um programa em Python que recebe um valor em reais e
 o converte para outra moeda. Use um menu para escolher a
@@ -24,7 +24,7 @@ fictícios para as taxas de conversão:
 ''')
 
 ex1()
-sl(2)
+sleep(2)
 
 print('''Ex. 2.
 Faça um programa em Python que simula as operações de
@@ -45,7 +45,7 @@ ele escolha a opção "Sair".
 ''')
 
 ex2()
-sl(2)
+sleep(2)
 
 print('''Ex. 3. 
 Faça um programa em Python que leia dois valores inteiros, x
@@ -58,7 +58,7 @@ função).
 ''')
 
 ex3()
-sl(2)
+sleep(2)
 
 print('''Ex. 4. 
 Faça um programa em Python que imprima todos múltiplos de
@@ -69,7 +69,8 @@ Utilizar função.
 
 
 ex4()
-sl(2)
+sleep(2)
+
 print('''Ex. 5. 
 Você foi contratado para desenvolver um pequeno sistema de
 gerenciamento de uma lista de tarefas pessoais. Escreva um
@@ -85,7 +86,8 @@ Utilizar função.
 ======================================================
 ''')
 ex5()
-sl(2)
+sleep(2)
+
 print('''Ex. 6. 
 Escreva um programa em Python que simule o controle de
 uma sala de cinema. O cinema possui 10 assentos
@@ -105,7 +107,8 @@ e a liberação de assentos que já estão livres. Utilizar função.
 ''')
 
 ex6()
-sl(2)
+sleep(2)
+
 print('''Ex. 7. 
 Uma escola aplicou provas em várias turmas e deseja
 registrar as maiores notas obtidas por seus alunos. Cada
@@ -132,7 +135,8 @@ função.
 ''')
 
 ex7()
-sl(2)
+sleep(2)
+
 print('''Ex. 8. 
 Uma universidade está organizando os dados de participação
 dos alunos em dois eventos acadêmicos: uma palestra sobre
@@ -163,8 +167,10 @@ escolha a opção de sair. Utilize operações com conjuntos
 Utilizar função.
 ======================================================
 ''')
+
 ex8()
-sl(2)
+sleep(2)
+
 print('''Ex. 9. 
 Uma livraria quer controlar seu estoque usando um dicionário
 onde as chaves são os títulos dos livros e os valores são a
@@ -189,7 +195,8 @@ sair. Utilizar função.
 
 
 ex9()
-sl(2)
+sleep(2)
+
 print('''Ex. 10. 
 Você foi contratado para desenvolver um sistema simples
 para gerenciar um campeonato de futebol. O sistema deve
@@ -211,4 +218,5 @@ O programa deve funcionar em loop até o usuário escolher
 sair. Utilizar função.
 ======================================================
 ''')
+
 ex10()
