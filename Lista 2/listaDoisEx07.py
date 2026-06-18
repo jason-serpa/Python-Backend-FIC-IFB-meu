@@ -50,6 +50,8 @@ def adicionar(alunos):
 def mostrar(alunos):
     '''Mostrar melhor aluno por disciplina'''
     disciplinas = []
+    melhorAluno = None
+    melhoresAlunos = []
     for aluno in alunos:
         if aluno[2] not in disciplinas:
             disciplinas.append(aluno[2])
@@ -60,7 +62,12 @@ def mostrar(alunos):
         for aluno in alunos:
             if disciplina in aluno[2]:
                 print(f"Aluno de {disciplina}: {aluno[0]}")
-
+                if melhorAluno == None:
+                    melhorAluno = [aluno[0], aluno[1]]
+                else:
+                    if melhorAluno[1] < aluno[1]:
+                        melhorAluno = [aluno[0], aluno[1]]
+    print(f"Melhor aluno: {melhorAluno}")
 
     #for disciplina in disciplinas:
         
