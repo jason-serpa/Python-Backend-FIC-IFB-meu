@@ -10,7 +10,7 @@ função).
 def ex3():
     x = int(input("Insira o valor X\n"))
     y = int(input("Insira o valor Y\n"))
-
+    
     resultado = 1
     if y != 0:
         for _ in range(y):
