@@ -58,29 +58,47 @@ def mostrar(alunos):
     
     
     for disciplina in disciplinas:
-        #print(disciplina)
+        melhorAluno = None
+        
         for aluno in alunos:
-            if disciplina in aluno[2]:
-                print(f"Aluno de {disciplina}: {aluno[0]}")
+            if disciplina == aluno[2]:
                 if melhorAluno == None:
-                    melhorAluno = [aluno[0], aluno[1]]
+                    melhorAluno = [aluno[0], aluno[1], disciplina]
                 else:
                     if melhorAluno[1] < aluno[1]:
-                        melhorAluno = [aluno[0], aluno[1]]
-    print(f"Melhor aluno: {melhorAluno}")
-
-    #for disciplina in disciplinas:
+                        melhorAluno = [aluno[0], aluno[1], disciplina]
+        melhoresAlunos.append(melhorAluno)
         
+    for aluno in melhoresAlunos:
+        print(f"Melhor aluno de {aluno[2]}: {aluno[0]}, nota {aluno[1]}")
     return
 
 
 def consultar(alunos):
     '''Consultar notas por aluno'''
-    return
+    nomeAluno = input("Insira o nome do aluno:\n> ").upper()
+    encontro = 0
+    notas = []
+    for aluno in alunos:
+        if aluno[0] == nomeAluno:
+            notas.append([aluno[2], aluno[1]])
+            encontro = 1
+            
+    if not encontro:
+        print("Aluno não encontrado")
+        return
 
+    print("Aluno encontrado.")
+    for nota in notas:
+        print(f"Nota em {nota[0]}: {nota[1]}")
+    return
 
 def exibir(alunos):
     '''Exibir notas ordenadas'''
+    
+    ordenado = sorted(alunos, key=lambda aluno: aluno[1], reverse=True)
+    for aluno in ordenado:
+        print(f"{aluno[1]}, {aluno[0]}, {aluno[2]}")
     return
 
 
