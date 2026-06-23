@@ -4,6 +4,10 @@ from listaDoisEx03 import *
 from listaDoisEx04 import *
 from listaDoisEx05 import *
 from listaDoisEx06 import *
+from listaDoisEx07 import *
+from listaDoisEx08 import *
+from listaDoisEx09 import *
+from listaDoisEx10 import *
 from time import sleep
 print('''Ex. 1. 
 Crie um programa em Python que recebe um valor em reais e
