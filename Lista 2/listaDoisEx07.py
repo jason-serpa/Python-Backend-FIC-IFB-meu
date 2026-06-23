@@ -23,26 +23,11 @@ e manipule-as sem alterar sua estrutura original. Utilizar
 função.
 '''
 
-
-# aluno = (nome: str, nota: float, disciplina: str)
-
-# 1. Adicionar nota: o usuário deve informar o nome do aluno,
-# a nota (float) e a disciplina, e esses dados devem ser
-# adicionados como uma nova tupla à lista.
-# 2. Mostrar melhor aluno por disciplina: para cada disciplina
-# presente na lista, exiba o nome do aluno com a maior nota.
-# 3. Consultar notas por aluno: o usuário digita o nome de um
-# aluno e o programa mostra todas as notas dele, com a
-# respectiva disciplina.
-# 4. Exibir notas ordenadas (decrescente): mostre todas as
-# tuplas da lista ordenadas da maior para a menor nota, no
-# formato (nota, nome_do_aluno, disciplina).
-# 5. Sair
 def adicionar(alunos):
     '''Adicionar nota'''
 
     temp = ((input("Insira o nome do aluno\n> ").upper(), float(input("Insira a nota do aluno\n> ")), input("Insira a disciplina do aluno\n> ").upper()))
-    # temp = ("JOSÉ", "7.40", "QUÍMICA")
+
     alunos = alunos + (temp,)
     return alunos
 
