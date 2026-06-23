@@ -25,7 +25,11 @@ def adicionar(sistema):
     sistema.update({equipe: 0})
     return sistema
 
-def registrar(sistema):
+def registrar(sistema:dict):
+    print(len(sistema.keys()))
+    if len(sistema.keys())<2:
+        print(f"O número atual de times é apenas {len(sistema.keys())}, é necessário ao menos dois times.")
+        return sistema
     equipeUm = input("Insira o nome da primeira equipe:\n> ").upper()
     placarUm = int(input(f"Quantos gols a {equipeUm} realizou no jogo?\n> "))
     equipeDois = input("Insira o nome da segunda equipe:\n> ").upper()
@@ -43,7 +47,6 @@ def registrar(sistema):
         print(f"Empate entre os times {equipeUm} e {equipeDois}\n> +1 Ponto")
         sistema[equipeUm] += 1
         sistema[equipeDois] += 1
-        
     return sistema
 
 def mostrar(sistema: dict):
