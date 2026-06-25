@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+<flowgorithm fileversion="4.2">
+    <attributes>
+        <attribute name="name" value="ex6"/>
+        <attribute name="authors" value="Alunocest"/>
+        <attribute name="about" value=""/>
+        <attribute name="saved" value="2026-06-25 03:05:58 "/>
+        <attribute name="created" value="QWx1bm9jZXN0O0NFU1QxNTU0ODM7MjAyNi0wNi0yNTsiMDI6NTU6NDQgIjsyNzU3"/>
+        <attribute name="edited" value="QWx1bm9jZXN0O0NFU1QxNTU0ODM7MjAyNi0wNi0yNTsiMDM6MDU6NTggIjsyOzI4Njc="/>
+    </attributes>
+    <function name="Main" type="None" variable="">
+        <parameters/>
+        <body>
+            <comment text="6. Soma de dois n&#250;meros (1,11).&#13;&#10;Enunciado:&#13;&#10;Crie um algoritmo que:&#13;&#10;-Pe&#231;a ao usu&#225;rio dois n&#250;meros&#13;&#10;-Some esses dois n&#250;meros&#13;&#10;-Mostre o resultado.&#13;&#10;"/>
+            <declare name="numUm, numDois" type="Integer" array="False" size=""/>
+            <output expression="&quot;Insira um n&#250;mero&quot;" newline="True"/>
+            <input variable="numUm"/>
+            <output expression="&quot;Insira outro n&#250;mero&quot;" newline="True"/>
+            <input variable="numDois"/>
+            <output expression="&quot;O resultado da soma entre os dois &#233; &quot;" newline="False"/>
+            <output expression="numUm+numDois" newline="False"/>
+            <output expression="&quot;.&quot;" newline="False"/>
+        </body>
+    </function>
+</flowgorithm>

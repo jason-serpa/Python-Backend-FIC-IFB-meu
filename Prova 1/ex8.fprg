@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<flowgorithm fileversion="4.2">
+    <attributes>
+        <attribute name="name" value="ex8"/>
+        <attribute name="authors" value="Alunocest"/>
+        <attribute name="about" value=""/>
+        <attribute name="saved" value="2026-06-25 03:09:36 "/>
+        <attribute name="created" value="QWx1bm9jZXN0O0NFU1QxNTU0ODM7MjAyNi0wNi0yNTsiMDM6MDY6MzYgIjsyNzU1"/>
+        <attribute name="edited" value="QWx1bm9jZXN0O0NFU1QxNTU0ODM7MjAyNi0wNi0yNTsiMDM6MDk6MzYgIjsxOzI4NjY="/>
+    </attributes>
+    <function name="Main" type="None" variable="">
+        <parameters/>
+        <body>
+            <comment text="8. Crie um algoritmo que:&#13;&#10;- Pe&#231;a o nome do usu&#225;rio;&#13;&#10;- Exiba uma mensagem personalizada&#13;&#10;- &#8220;Ol&#225;, [nome]! Bem-vindo(a)!&#8221;"/>
+            <declare name="nome" type="String" array="False" size=""/>
+            <output expression="&quot;Qual &#233; o seu nome?&quot;" newline="True"/>
+            <input variable="nome"/>
+            <output expression="&quot;Ol&#225;, &quot;" newline="False"/>
+            <output expression="nome" newline="False"/>
+            <output expression="&quot;! Bem vindo(a)!&quot;" newline="False"/>
+        </body>
+    </function>
+</flowgorithm>

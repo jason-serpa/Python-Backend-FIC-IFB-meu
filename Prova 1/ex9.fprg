@@ -1,0 +1,33 @@
+<?xml version="1.0"?>
+<flowgorithm fileversion="4.2">
+    <attributes>
+        <attribute name="name" value="ex9"/>
+        <attribute name="authors" value="Alunocest"/>
+        <attribute name="about" value=""/>
+        <attribute name="saved" value="2026-06-25 03:21:12 "/>
+        <attribute name="created" value="QWx1bm9jZXN0O0NFU1QxNTU0ODM7MjAyNi0wNi0yNTsiMDM6MTM6MjUgIjsyNzUx"/>
+        <attribute name="edited" value="QWx1bm9jZXN0O0NFU1QxNTU0ODM7MjAyNi0wNi0yNTsiMDM6MjE6MTIgIjszOzI4NTY="/>
+    </attributes>
+    <function name="Main" type="None" variable="">
+        <parameters/>
+        <body>
+            <comment text="9. Crie um algoritmo que:&#13;&#10;1. Solicite ao usu&#225;rio um n&#250;mero inteiro&#13;&#10;2. Envie esse n&#250;mero para uma fun&#231;&#227;o chamada CalcularQuadrado, que retorne o quadrado do n&#250;mero&#13;&#10;3. Mostre o resultado na tela&#13;&#10;4. Fa&#231;a o fluxograma no Flowgorithm"/>
+            <declare name="num" type="Real" array="False" size=""/>
+            <output expression="&quot;Insira um n&#250;mero:&quot;" newline="True"/>
+            <input variable="num"/>
+            <output expression="&quot;O valor do quadrado de &quot;" newline="False"/>
+            <output expression="num" newline="False"/>
+            <output expression="&quot; &#233; &quot;" newline="False"/>
+            <call expression="CalcularQuadrado(num)"/>
+            <output expression="&quot;.&quot;" newline="False"/>
+        </body>
+    </function>
+    <function name="CalcularQuadrado" type="None" variable="">
+        <parameters>
+            <parameter name="num" type="Real" array="False"/>
+        </parameters>
+        <body>
+            <output expression="num*num" newline="False"/>
+        </body>
+    </function>
+</flowgorithm>

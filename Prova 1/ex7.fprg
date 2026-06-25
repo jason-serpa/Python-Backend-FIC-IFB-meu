@@ -1,0 +1,28 @@
+<?xml version="1.0"?>
+<flowgorithm fileversion="4.2">
+    <attributes>
+        <attribute name="name" value="ex7"/>
+        <attribute name="authors" value="Alunocest"/>
+        <attribute name="about" value=""/>
+        <attribute name="saved" value="2026-06-25 03:06:31 "/>
+        <attribute name="created" value="QWx1bm9jZXN0O0NFU1QxNTU0ODM7MjAyNi0wNi0yNTsiMDM6MDA6NTcgIjsyNzUy"/>
+        <attribute name="edited" value="QWx1bm9jZXN0O0NFU1QxNTU0ODM7MjAyNi0wNi0yNTsiMDM6MDY6MzEgIjsyOzI4NTk="/>
+    </attributes>
+    <function name="Main" type="None" variable="">
+        <parameters/>
+        <body>
+            <comment text="7. Fa&#231;a um algoritmo que:&#13;&#10;- Solicite um n&#250;mero ao usu&#225;rio&#13;&#10;- Informe se o n&#250;mero &#233; par ou &#237;mpar."/>
+            <declare name="num" type="Integer" array="False" size=""/>
+            <output expression="&quot;Insira um n&#250;mero:&quot;" newline="True"/>
+            <input variable="num"/>
+            <if expression="num%2 == 0">
+                <then>
+                    <output expression="&quot;O valor &#233; par.&quot;" newline="True"/>
+                </then>
+                <else>
+                    <output expression="&quot;O valor &#233; &#237;mpar.&quot;" newline="True"/>
+                </else>
+            </if>
+        </body>
+    </function>
+</flowgorithm>
