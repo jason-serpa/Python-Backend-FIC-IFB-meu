@@ -77,16 +77,41 @@ def main():
 
 > '''))
         
-        if i:
+        if i ==1:
             print("\nLivros no sistema:")
             for i in range(len(biblioteca)):
-                print(biblioteca[i].get_titulo())
+                print(f"- {biblioteca[i].get_titulo()}")
             pass
             sleep(2)
         elif i == 2:
             nome = input("Insira o nome do livro:\n> ")
+            livro = None
+            user = None
+            for i in range(len(biblioteca)):
+                if nome in biblioteca[i].get_titulo():
+                    print(f"\nLivro encontrado: {nome}")
+                    livro = biblioteca[i]
             
-            pass
+            if livro != None:
+                matri = input("\nInsira o número da matrícula.\n> ")
+                for usuario in usuarios:
+                    if usuario.get_matricula() == matri:
+                        print(f"\nUsuário {usuario.nome} encontrado\n")
+                        user = usuario    
+            else:
+                print("\nLivro não encontrado.")
+                sleep(2)
+            
+            if user != None:
+                 i = int(input(f'''
+====================SGB====================
+Deseja efetuar o empréstimo do livro {livro.get_titulo()}?
+para o aluno {user.nome}?                      
+1- Sim
+2- Não
+> '''))
+                if i == 1:
+                       
         elif i == 3:
             pass
 
