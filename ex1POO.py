@@ -40,12 +40,14 @@ class Usuario:
     def emprestar_livro(self, livro):
         if livro not in self.livrosEmprestados:
             self.livrosEmprestados.append(livro)
+            print("Livro emprestado com sucesso.")
         else:
-            print("Livro já emprestado.")
+            print("Livro já se encontra emprestado.")
 
     def devolver_livro(self, livro):
         if livro in self.livrosEmprestados:
             self.livrosEmprestados.remove(livro)
+            print("Livro devolvido com sucesso.")
         else:
             print("Livro não possuído.")
 
@@ -74,22 +76,24 @@ def main():
 1- Listar livros
 2- Empréstimo de livro
 3- Devolução de livro
-
+4- Listar livros emprestados para usuário
+                      
 > '''))
         
         if i ==1:
             print("\nLivros no sistema:")
             for i in range(len(biblioteca)):
-                print(f"- {biblioteca[i].get_titulo()}")
+                print(f"- {biblioteca[i].get_titulo()}, {biblioteca[i].get_autor()}")
             pass
             sleep(2)
-        elif i == 2:
+
+        elif i == 2: # Empréstimo
             nome = input("Insira o nome do livro:\n> ")
             livro = None
             user = None
             for i in range(len(biblioteca)):
                 if nome in biblioteca[i].get_titulo():
-                    print(f"\nLivro encontrado: {nome}")
+                    print(f"\nLivro encontrado: {biblioteca[i].get_titulo()}, {biblioteca[i].get_autor()}")
                     livro = biblioteca[i]
             
             if livro != None:
@@ -103,17 +107,62 @@ def main():
                 sleep(2)
             
             if user != None:
-                 i = int(input(f'''
+                i = int(input(f'''
 ====================SGB====================
 Deseja efetuar o empréstimo do livro {livro.get_titulo()}?
 para o aluno {user.nome}?                      
 1- Sim
 2- Não
 > '''))
+                
                 if i == 1:
-                       
-        elif i == 3:
-            pass
+                    user.emprestar_livro(livro)
+                
+        elif i == 3: # Devolução
+            nome = input("Insira o nome do livro:\n> ")
+            livro = None
+            user = None
+            for i in range(len(biblioteca)):
+                if nome in biblioteca[i].get_titulo():
+                    print(f"\nLivro encontrado: {biblioteca[i].get_titulo()}, {biblioteca[i].get_autor()}")
+                    livro = biblioteca[i]
+            
+            if livro != None:
+                matri = input("\nInsira o número da matrícula.\n> ")
+                for usuario in usuarios:
+                    if usuario.get_matricula() == matri:
+                        print(f"\nUsuário {usuario.nome} encontrado\n")
+                        user = usuario    
+            else:
+                print("\nLivro não encontrado.")
+                sleep(2)
+
+            
+            if user != None:
+
+                i = int(input(f'''
+====================SGB====================
+Deseja efetuar a devolução do livro {livro.get_titulo()}?
+para o aluno {user.nome}?                      
+1- Sim
+2- Não
+> '''))
+                
+                if i == 1:
+                    user.devolver_livro(livro)
+
+        elif i == 4: # Listar possuídos
+            user = None
+            matricula = input("Insira o número da matrícula\n> ")
+            for usuario in usuarios:
+                if matricula == usuario.get_matricula():
+                    print(f"\nUsuário {usuario.nome} encontrado")
+                    user = usuario
+            
+            for i in range(len(usuario.livrosEmprestados)):
+                print(f"- {usuario.livrosEmprestados[i].get_titulo()}, {usuario.livrosEmprestados[i].get_autor()}")
+
+            sleep(2)
 
 
 
