@@ -54,8 +54,6 @@ class Biblioteca:
             print(f"- Título: {livro.titulo}\n- Ano: {livro.ano}\n- Autor: {livro.autor.nome}\n- Nacionalidade: {livro.autor.nacionalidade}\n- Status: {dispText}\n")
             return
             
-
-
 class Usuario:
     def __init__(self, nome, biblioteca):
         self.nome = nome
