@@ -15,6 +15,9 @@ class Autor:
     def __init__(self, nome, nacionalidade):
         self.nome = nome
         self.nacionalidade = nacionalidade
+    
+    def exibir_autor(self):
+        return f"{self.nome}, {self.nacionalidade}"
 
 class Livro:
     def __init__(self, titulo, ano, autor):
@@ -27,7 +30,7 @@ class Biblioteca:
         self.nome = nome
         self.livros = [] 
 
-    def criar_livro(self, titulo, ano, autor): 
+    def adicionar_livro(self, titulo, ano, autor): 
         livro = Livro(titulo, ano, autor) #Composição
         self.livros.append(livro)
         return livro
@@ -52,8 +55,8 @@ autor2 = Autor(nome="Machado de Assis", nacionalidade="Brasileiro")
 
 biblioteca = Biblioteca("Biblioteca Principal")
 
-biblioteca.criar_livro(titulo="Gatos Guerreiros", ano=2003, autor=autor1)
-biblioteca.criar_livro(titulo="Dom Casmurro", ano=1899, autor=autor2)
+biblioteca.adicionar_livro(titulo="Gatos Guerreiros", ano=2003, autor=autor1)
+biblioteca.adicionar_livro(titulo="Dom Casmurro", ano=1899, autor=autor2)
 
 admin = Usuario(nome="Admin", biblioteca=biblioteca)
 
