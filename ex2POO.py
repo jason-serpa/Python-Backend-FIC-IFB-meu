@@ -41,7 +41,7 @@ class Usuario:
     def pegar_livro(self, titulo):
         for livro in self.biblioteca.livros: #Dependência
             if titulo == livro.titulo:
-                print(f"Usuário {self.nome} pegou {livro.titulo}, por {livro.autor.nome}.")
+                print(f"Usuário {self.nome} pegou {livro.titulo}, de {livro.ano} por {livro.autor.nome} que é {livro.autor.nacionalidade}.")
                 return livro
         print("Livro não encontrado.")
         return None
@@ -57,4 +57,4 @@ biblioteca.criar_livro(titulo="Dom Casmurro", ano=1899, autor=autor2)
 
 admin = Usuario(nome="Admin", biblioteca=biblioteca)
 
-admin.pegar_livro(titulo="Dom Casmurro")
+admin.pegar_livro(titulo="Gatos Guerreiros")
