@@ -47,15 +47,38 @@ class Carrinho:
                                     quantidade=int(input("\nInsira a quantidade de produtos:\n> "))))
         
     def Remover(self):
-        self.produtos.remove(Produto(nome=input("\nInsira o nome do produto:\n> "), \
-                                    preco=float(input("\nInsira o preço do produto:\n> ")), \
-                                    quantidade=int(input("\nInsira a quantidade de produtos:\n> "))))
+        i = 0
+        print("Escolha um dos produtos a seguir:")
+        for produto in self.produtos:
+            produto : Produto
+            i+=1
+            print(f"> {i}: {produto.get_nome()}")
+        escolha = int(input("\n> "))         
+        if escolha not in range(1, i+1):
+            print("Escolha inválida")
+            return
         
+        print("Escolha válida")
+        quantAtual = self.produtos[escolha-1].get_quantidade()
+        quant = int(input("Deseja remover quantos itens?\n> "))
+        if quant > quantAtual:
+            print("Quantidade inválida")
+            return
+        print("Quantidade válida")
+        
+        self.produtos[escolha-1].set_quantidade(quantAtual-quant)
+        if self.produtos[escolha-1].get_quantidade() == 0:
+            print("Produto eliminado da lista")
+            self.produtos.pop(escolha-1)
+        else:
+            print("Quantidade atualizada.")
+            print(f"Quantidade atual: {self.produtos[escolha-1].get_quantidade()} unidades")
+            
     def Calcular(self):
         total = 0
         for produto in self.produtos:
             produto : Produto
-            if produto.get_quantidade != 1:
+            if produto.get_quantidade() != 1:
                 total += produto.get_preco()*produto.get_quantidade()
             else:
                 total += produto.get_preco()
@@ -71,6 +94,7 @@ class Carrinho:
             print(">>", produto.get_preco(), "R$")
 
 carrinhoDeCompras = Carrinho(produtos=[])
+
 while True:
     i = int(input('''
 =============Carrinho de Compras=================
