@@ -15,3 +15,19 @@ cadastrar personagens, listar todos os personagens, executar
 os golpes especiais ou defesas, e encerrar o programa.
 Explore o uso da herança múltipla e do polimorfismo para
 definir o comportamento de cada tipo de cavaleiro'''
+
+class Personagem:
+    def __init__(self, nome, constelacao):
+        self.nome = nome
+        self.constelacao = constelacao
+    
+    def apresentar(self):
+        print("Sou ", self.nome, ", cavaleiro de ", self.constelacao, "!", sep="")
+
+class CavaleiroDeBronze(Personagem):
+    def __init__(self, nome, constelacao, poderDeLuta):
+        super().__init__(nome, constelacao)
+        self.poderDeLuta = poderDeLuta
+    def golpe_especial(self):
+        print()
+#Continuar
