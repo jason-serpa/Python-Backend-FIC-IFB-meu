@@ -12,15 +12,15 @@ programa.'''
 
 
 class Documento:
-    def __init__(self, titulo, conteudo):
-        self.title = titulo
+    def __init__(self, titulo : str, conteudo):
+        self.title = titulo.upper()
         self.cont = conteudo
 
 
 class Impressora:
     def imprimir(self, doc : Documento):
         print()
-        print("-"*7, doc.title, "-"*7, sep="")
+        print("-"*7, doc.title, "-"*7)
         print(doc.cont)
         
 docs = []

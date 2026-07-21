@@ -102,6 +102,7 @@ while True:
 2 - Remover do carrinho
 3 - Calcular total              
 4 - Listar produtos
+5 - Sair
 > '''))
     if i == 1:
         carrinhoDeCompras.Adicionar()
@@ -111,3 +112,5 @@ while True:
         carrinhoDeCompras.Calcular()
     elif i == 4:
         carrinhoDeCompras.Listar()
+    elif i == 5:
+        break
