@@ -87,15 +87,14 @@ while True:
             casa : Casa
             print("-"*20)
             print(f"> Casa {casa.nome}")
-            for comodo in casa.get_comodos:
+            for comodo in casa.get_comodos():
                 comodo : Comodo
                 nome = comodo.get_nome()
                 area = comodo.get_area()
-                print(f"> {nome}: {area}m")
+                print(f">> {nome}: {area}m")
 
         except Exception as err:
             print(f"Algo deu errado.\n>>ERRO: {err}")
-    #Corrigir
     if i == 4:
         try:
             print("Escolha o número da casa:")
