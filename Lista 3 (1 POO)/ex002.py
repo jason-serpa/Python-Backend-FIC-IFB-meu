@@ -24,9 +24,9 @@ class Palavra:
         else:
             self.ifb = False
 
-amendoim = Palavra("Amendoim")
-print("◦ O número de caracteres da string:", amendoim.quantidade)
-print("◦ A string com todas suas letras em maiúsculo:", amendoim.maiusculo)
-print("◦ A string com todas suas letras em minúsculo:", amendoim.minusculo)
-print("◦ O número de vogais da string:", amendoim.vogais)
-print("Se a substring “IFB” aparece no texto (ignorando maiúsculas/minúsculas):", amendoim.ifb)
+palavra = Palavra(input())
+print("◦ O número de caracteres da string:", palavra.quantidade)
+print("◦ A string com todas suas letras em maiúsculo:", palavra.maiusculo)
+print("◦ A string com todas suas letras em minúsculo:", palavra.minusculo)
+print("◦ O número de vogais da string:", palavra.vogais)
+print("Se a substring “IFB” aparece no texto (ignorando maiúsculas/minúsculas):", palavra.ifb)

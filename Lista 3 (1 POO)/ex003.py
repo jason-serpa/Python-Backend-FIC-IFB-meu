@@ -10,6 +10,6 @@ class Palavra:
         self.criptografada = self.palavra.replace("A", "4").replace("E", "3").replace("I", "1").replace("O", "0").replace("U", "8").capitalize()
 
 
-amendoim = Palavra("Amendoim")
-print("Palavra original:", amendoim.palavra)
-print("Palavra criptografada:", amendoim.criptografada)
+palavra = Palavra(input())
+print("Palavra original:", palavra.palavra)
+print("Palavra criptografada:", palavra.criptografada)
