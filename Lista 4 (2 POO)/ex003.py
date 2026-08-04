@@ -42,3 +42,9 @@ Com este exercício, você irá praticar de forma integrada os principais concei
 Python, desenvolvendo um sistema completo, robusto e didático, com menu interativo e
 código bem comentado.
 '''
+
+class Usuario:
+    def __init__(self, nome, matricula, email):
+        self.nome = nome
+        self.matricula = matricula
+        self.email = email
