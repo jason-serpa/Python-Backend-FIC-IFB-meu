@@ -26,7 +26,7 @@ class View(): #View
         for tarefa in tarefas:
             index+=1
             print(f"- {index}: {tarefa.nome}")
-            print(f"- Status: {'Concluido' if tarefa.concluida==True else 'Pendente'}")
+            print(f"- Status: {'Concluído' if tarefa.concluida==True else 'Pendente'}")
         print("")
 
 
