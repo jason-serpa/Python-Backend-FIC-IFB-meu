@@ -8,11 +8,10 @@ def book_list(request):
 
 def add_book(request):
     if request.method == 'POST':
-        form = BookForm(request.POST)
+        form = BookForm(request.POST, request.FILES)
         if form.is_valid():
             form.save()
             return redirect('book_list')
     else:
         form = BookForm()
     return render(request, 'catalog/add_book.html', {'form': form})
-
