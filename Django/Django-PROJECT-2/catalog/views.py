@@ -1,22 +1,73 @@
 from datetime import timedelta  # representa um intervalo de tempo (ex.: 14 dias)
+from functools import wraps # ajuda a descrever decorators
 
 from django.contrib import messages  # mensagens de retorno ("Empréstimo feito!")
 from django.contrib.auth.decorators import login_required
+from django.core.exceptions import PermissionDenied  # gera a resposta 403 (proibido)
+from django.core.paginator import Paginator  # divide listas em páginas
+from django.db.models import Count, F, Q  # ferramentas para montar consultas
 from django.shortcuts import get_object_or_404, redirect, render
 from django.utils import timezone
 from django.views.decorators.http import require_POST
 
 from .models import Book, Loan
 
-LOAN_DAYS = 21 # prazo padrão de empréstimo, em dias
+LOAN_DAYS = 14 # prazo padrão de empréstimo, em dias
+BOOKS_PER_PAGE = 10 # quantidade de livros por página
+
+def staff_required(view):
+    """Decorator: só deixa passar quem está logado E faz parte da equipe."""
+    @wraps(view) # mantém o nome e a documentação da view original
+    @login_required # primeiro exige login
+    def wrapper(request, *args, **kwargs):
+        # logado porém não é staff:
+        if not request.user.is_staff:
+            raise PermissionDenied
+
+        return view(request, *args, **kwargs)
+
+    return wrapper
 
 
 @login_required  # só usuários logados; os outros são mandados para o 
 def book_list(request):
-    books = Book.objects.all()
-    active_count = Loan.objects.filter(user=request.user, returned_at__isnull=True).count()
-    return render(request, "catalog/book_list.html", {"books": books, "active_loans_count": active_count})
+    """Lista o acervo com busca filtro de disponibilidade e paginação."""
 
+    #books = Book.objects.all()
+    #active_count = Loan.objects.filter(user=request.user, returned_at__isnull=True).count()
+    #return render(request, "catalog/book_list.html", {"books": books, "active_loans_count": active_count})
+    
+    # 1) Consulta base: cada livro já vem com o campo calculado "available" (cópias disponíveis).
+    #    Count conta os empréstimos ainda não devolvidos; F("copies_total") é o valor da coluna.
+
+    books = Book.objects.annotate(
+        available = F("copies_total") - Count("loans", filter=Q(loans__returned_at__isnull=True))
+    ).order_by("title")
+
+    # 2) Busca por texto: /?q=machado
+    q = request.GET.get("q", "").strip() # "" se o parâmetro não vier; strip tira espaços das pontas
+    if q:
+        # Q permite combinar condições com |: título | autor | ISBN contém o texto
+        books = books.filter(
+            Q(title__icontains=q) | Q(author__icontains=q) | Q(isbn__icontains=q)
+        )
+
+    # 3) Somente disponíveis: /?disponivel=1
+    only_available = request.GET.get("disponivel") == '1'
+    if only_available:
+        books = books.filter(available__gt=0) # __gt significa "maior que"
+
+    # 4) Paginação: /?page=2
+    paginator = Paginator(books, BOOKS_PER_PAGE)
+    # get_page aceita número inválido sem erro (vai para a primeira ou para a última página)
+    page_obj = paginator.get_page(request.GET.get("page"))
+
+    context = {
+        "page_obj": page_obj,
+        "q": q,
+        "only_available": only_available,
+    }
+    return render(request, "catalog/book_list.html", context)
 
 @login_required
 @require_POST  # recusa pedidos GET com erro 405: emprestar só por formulário
@@ -65,3 +116,34 @@ def return_book(request, loan_id):
         loan.mark_returned()  # regra de negócio que fica no model
         messages.success(request, f"“{loan.book.title}” devolvido. Obrigado!")
     return redirect("catalog:my_loans")
+
+
+# --------------- Staff Area ---------------
+
+@staff_required
+def overdue_loans(request):
+    """Empréstimos ativos cujo prazo já venceu, do mais antigo para o mais novo."""
+    loans = (
+        Loan.objects.filter(returned_at__isnull=True, due_date__lt=timezone.localdate())
+        .select_related("book", "user")
+        .order_by("due_date")
+    )
+    return render(request, "catalog/overdue_loans.html", {"loans": loans})
+
+@staff_required
+def book_borrowers(request, book_id):
+    """Quem está com um determinado livro neste momento."""
+    book = get_object_or_404(Book, pk=book_id)
+    loans = book.loans.filter(returned_at__isnull=True).select_related("user")
+    return render(request, "catalog/book_borrowers.html", {"book": book, "loans": loans})
+
+@staff_required
+@require_POST
+def staff_mark_returned(request, loan_id):
+    """A equipe registra a devolução de qualquer empréstimo."""
+    # Aqui não filtramos por usuário: a equipe pode devolver o empréstimo de qualquer leitor
+    loan = get_object_or_404(Loan, pk=loan_id)
+    if loan.is_active:
+        loan.mark_returned()
+        messages.success(request, f"Devolução de “{loan.book.title}” ({loan.user}) registrada.")
+    return redirect("catalog:overdue_loans")
