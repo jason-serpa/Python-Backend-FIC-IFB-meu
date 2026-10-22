@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import Book, Category, Loan, SearchQuery  # o ponto significa "deste mesmo app"
+from .models import Book, Category, Loan, Review, SearchQuery  # o ponto significa "deste mesmo app"
 
 
 @admin.register(Category)
@@ -54,3 +54,10 @@ class SearchQueryAdmin(admin.ModelAdmin):
     list_display = ("user", "q", "created_at")
     list_filter = ("created_at",)
     search_fields = ("q", "user__username")
+
+
+@admin.register(Review)
+class ReviewAdmin(admin.ModelAdmin):
+    list_display = ("book", "user", "rating", "created_at")
+    list_filter = ("rating",)
+    search_fields = ("book__title", "user__username", "comment")

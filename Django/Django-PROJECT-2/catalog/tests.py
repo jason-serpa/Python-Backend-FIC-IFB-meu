@@ -1,11 +1,12 @@
 from datetime import timedelta
 
 from django.contrib.auth.models import User
+from django.core import mail  # caixa de saída de e-mails usada nos testes
 from django.test import TestCase
 from django.urls import reverse  # gera o endereço a partir do nome da rota (como o {% url %})
 from django.utils import timezone
 
-from .models import Book, Category, Loan, SearchQuery
+from .models import Book, Category, Loan, Review, SearchQuery
 
 
 def make_loan(book, user, days=14):
@@ -203,3 +204,85 @@ class CatalogFiltersTests(TestCase):
     def test_sugestoes_devolvem_json(self):
         response = self.client.get(reverse("catalog:book_suggestions"), {"q": "mach"})
         self.assertEqual(response.json(), {"suggestions": ["Machado de Assis"]})
+
+
+
+
+
+class AccountTests(TestCase):
+    """Testes da Aula 5: cadastro e recuperação de senha."""
+
+    def test_cadastro_cria_usuario_e_ja_entra(self):
+        # Os nomes password1 e password2 são os campos de senha do UserCreationForm
+        response = self.client.post(reverse("catalog:signup"), {
+            "username": "ana",
+            "email": "ana@exemplo.com",
+            "password1": "uma-senha-bem-forte-42",
+            "password2": "uma-senha-bem-forte-42",
+        })
+        self.assertRedirects(response, reverse("catalog:book_list"))
+        self.assertTrue(User.objects.filter(username="ana").exists())
+        # Já está logada: a lista de livros abre direto (200) em vez de mandar para o login
+        self.assertEqual(self.client.get(reverse("catalog:book_list")).status_code, 200)
+
+    def test_cadastro_recusa_email_repetido(self):
+        User.objects.create_user("ana", email="ana@exemplo.com", password="x")
+        response = self.client.post(reverse("catalog:signup"), {
+            "username": "ana2",
+            "email": "ANA@exemplo.com",  # mesmo e-mail, com letras maiúsculas
+            "password1": "uma-senha-bem-forte-42",
+            "password2": "uma-senha-bem-forte-42",
+        })
+        self.assertContains(response, "Já existe uma conta com este e-mail.")
+
+    def test_recuperar_senha_envia_email(self):
+        User.objects.create_user("ana", email="ana@exemplo.com", password="x")
+        self.client.post(reverse("password_reset"), {"email": "ana@exemplo.com"})
+        # Nos testes o Django não envia e-mails de verdade: eles ficam guardados em mail.outbox
+        self.assertEqual(len(mail.outbox), 1)
+        self.assertIn("ana@exemplo.com", mail.outbox[0].to)
+
+
+class ReviewTests(TestCase):
+    """Testes da Aula 5: página do livro e avaliações."""
+
+    def setUp(self):
+        self.maria = User.objects.create_user("maria", password="senha-forte-123")
+        self.joao = User.objects.create_user("joao", password="senha-forte-123")
+        self.book = Book.objects.create(title="Dom Casmurro", author="Machado de Assis", isbn="9788535910663")
+        self.url = reverse("catalog:review_book", args=[self.book.id])
+
+    def test_so_avalia_quem_ja_pegou_emprestado(self):
+        self.client.force_login(self.maria)  # Maria nunca pegou o livro
+        self.client.post(self.url, {"rating": 5, "comment": "Ótimo"})
+        self.assertEqual(Review.objects.count(), 0)
+
+    def test_avaliar_e_depois_editar_mantem_uma_avaliacao(self):
+        make_loan(self.book, self.maria)
+        self.client.force_login(self.maria)
+        self.client.post(self.url, {"rating": 3, "comment": "Bom"})
+        self.client.post(self.url, {"rating": 5, "comment": "Mudei de ideia: ótimo!"})
+        review = Review.objects.get()  # get() sem filtro: falha se houver mais de uma avaliação
+        self.assertEqual(review.rating, 5)
+
+    def test_nota_fora_de_1_a_5_e_recusada(self):
+        make_loan(self.book, self.maria)
+        self.client.force_login(self.maria)
+        response = self.client.post(self.url, {"rating": 9})
+        self.assertEqual(response.status_code, 200)  # a página volta mostrando o erro
+        self.assertEqual(Review.objects.count(), 0)
+
+    def test_pagina_do_livro_mostra_a_media(self):
+        Review.objects.create(book=self.book, user=self.maria, rating=5)
+        Review.objects.create(book=self.book, user=self.joao, rating=4)
+        self.client.force_login(self.maria)
+        response = self.client.get(reverse("catalog:book_detail", args=[self.book.id]))
+        self.assertContains(response, "4,5")  # média de 5 e 4, com vírgula (pt-br)
+        self.assertContains(response, "2 avaliações")
+
+    def test_nao_apaga_avaliacao_de_outra_pessoa(self):
+        review = Review.objects.create(book=self.book, user=self.joao, rating=4)
+        self.client.force_login(self.maria)
+        response = self.client.post(reverse("catalog:delete_review", args=[review.id]))
+        self.assertEqual(response.status_code, 404)
+        self.assertTrue(Review.objects.filter(pk=review.pk).exists())  # continua lá

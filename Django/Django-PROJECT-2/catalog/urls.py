@@ -14,6 +14,12 @@ urlpatterns = [
     path("exportar/<str:file_format>/", views.export_books, name="export_books"),
     # Endereço usado pelo JavaScript do autocompletar
     path("api/sugestoes/", views.book_suggestions, name="book_suggestions"),
+    # Cadastro de novos leitores
+    path("cadastro/", views.signup, name="signup"),
+    # Página de um livro e as avaliações
+    path("livros/<int:book_id>/", views.book_detail, name="book_detail"),
+    path("livros/<int:book_id>/avaliar/", views.review_book, name="review_book"),
+    path("avaliacoes/<int:review_id>/excluir/", views.delete_review, name="delete_review"),
     # <int:book_id> captura um número da URL e entrega para a view como book_id
     path("livros/<int:book_id>/emprestar/", views.borrow_book, name="borrow_book"),
     path("emprestimos/", views.my_loans, name="my_loans"),

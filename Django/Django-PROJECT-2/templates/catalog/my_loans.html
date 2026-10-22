@@ -28,7 +28,7 @@
                 {% endif %}
               </td>
               {# loan.book segue a ForeignKey até o livro #}
-              <td>{{ loan.book.title }}</td>
+              <td><a href="{% url 'catalog:book_detail' loan.book.id %}">{{ loan.book.title }}</a></td>
               {# O filtro date formata a data: dia/mês/ano hora:minuto #}
               <td>{{ loan.borrowed_at|date:"d/m/Y H:i" }}</td>
               <td>{{ loan.due_date|date:"d/m/Y" }}</td>

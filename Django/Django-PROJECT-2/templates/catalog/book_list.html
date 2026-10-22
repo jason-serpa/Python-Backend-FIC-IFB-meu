@@ -81,7 +81,7 @@
                 {% endif %}
               </td>
               {# O idioma só aparece quando não é português #}
-              <td>{{ book.title }}{% if book.language and book.language != "Português" %} <span class="muted">({{ book.language }})</span>{% endif %}</td>
+              <td><a href="{% url 'catalog:book_detail' book.id %}">{{ book.title }}</a>{% if book.language and book.language != "Português" %} <span class="muted">({{ book.language }})</span>{% endif %}</td>
               <td>{{ book.author }}</td>
               {# default mostra um travessão quando o valor está vazio #}
               <td>{{ book.category.name|default:"—" }}</td>
