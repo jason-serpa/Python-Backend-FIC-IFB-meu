@@ -8,6 +8,12 @@ app_name = "catalog"
 urlpatterns = [
     # Página inicial: lista de livros
     path("", views.book_list, name="book_list"),
+    path("busca-avancada/", views.advanced_search, name="advanced_search"),
+    path("historico/", views.search_history, name="search_history"),
+    # <str:file_format> captura um texto: /exportar/csv/ -> file_format="csv"
+    path("exportar/<str:file_format>/", views.export_books, name="export_books"),
+    # Endereço usado pelo JavaScript do autocompletar
+    path("api/sugestoes/", views.book_suggestions, name="book_suggestions"),
     # <int:book_id> captura um número da URL e entrega para a view como book_id
     path("livros/<int:book_id>/emprestar/", views.borrow_book, name="borrow_book"),
     path("emprestimos/", views.my_loans, name="my_loans"),

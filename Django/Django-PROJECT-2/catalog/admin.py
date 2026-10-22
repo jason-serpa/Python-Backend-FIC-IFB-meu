@@ -1,16 +1,24 @@
 from django.contrib import admin
 
-from .models import Book, Loan  # o ponto significa "deste mesmo app"
+from .models import Book, Category, Loan, SearchQuery  # o ponto significa "deste mesmo app"
+
+
+@admin.register(Category)
+class CategoryAdmin(admin.ModelAdmin):
+    list_display = ("name", "description")
+    search_fields = ("name",)  # a vírgula faz disto uma tupla de um item só
 
 
 # O decorator @admin.register liga o model Book à classe de configuração logo abaixo
 @admin.register(Book)
 class BookAdmin(admin.ModelAdmin):
     # Colunas mostradas na lista de livros (pode incluir @property, como copies_available)
-    list_display = ("title", "author", "isbn", "copies_total", "copies_available")
+    list_display = ("title", "author", "category", "language", "edition_year",
+                    "copies_total", "copies_available")
+    # Filtros laterais por categoria e idioma
+    list_filter = ("category", "language")
     # Campos pesquisados pela caixa de busca do Admin
-    search_fields = ("title", "author", "isbn")
-    list_filter = ("author",)
+    search_fields = ("title", "author", "isbn", "publisher")
 
 
 @admin.register(Loan)
@@ -39,3 +47,10 @@ class LoanAdmin(admin.ModelAdmin):
             loan.mark_returned()  # reaproveita a regra que está no model
         # Mensagem que aparece no topo da página do Admin
         self.message_user(request, f"{total} empréstimo(s) marcado(s) como devolvido(s).")
+
+
+@admin.register(SearchQuery)
+class SearchQueryAdmin(admin.ModelAdmin):
+    list_display = ("user", "q", "created_at")
+    list_filter = ("created_at",)
+    search_fields = ("q", "user__username")

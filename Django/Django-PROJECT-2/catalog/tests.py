@@ -5,7 +5,7 @@ from django.test import TestCase
 from django.urls import reverse  # gera o endereço a partir do nome da rota (como o {% url %})
 from django.utils import timezone
 
-from .models import Book, Loan
+from .models import Book, Category, Loan, SearchQuery
 
 
 def make_loan(book, user, days=14):
@@ -143,3 +143,63 @@ class StaffViewsTests(TestCase):
         self.client.post(reverse("catalog:staff_mark_returned", args=[loan.id]))
         loan.refresh_from_db()
         self.assertFalse(loan.is_active)
+
+
+class CatalogFiltersTests(TestCase):
+    """Testes da Aula 4: filtros, ordenação, histórico e exportação."""
+
+    def setUp(self):
+        self.user = User.objects.create_user("maria", password="senha-forte-123")
+        self.client.force_login(self.user)
+        romance = Category.objects.create(name="Romance")
+        tecnologia = Category.objects.create(name="Tecnologia")
+        Book.objects.create(title="Dom Casmurro", author="Machado de Assis", isbn="1111111111111",
+                            category=romance, language="Português", edition_year=1899)
+        Book.objects.create(title="Python Fluente", author="Luciano Ramalho", isbn="2222222222222",
+                            category=tecnologia, language="Português", edition_year=2015)
+        Book.objects.create(title="Pride and Prejudice", author="Jane Austen", isbn="3333333333333",
+                            category=romance, language="Inglês", edition_year=1813)
+        self.romance = romance
+
+    def titles(self, response):
+        """Títulos que apareceram na página, na ordem em que apareceram."""
+        return [book.title for book in response.context["page_obj"]]
+
+    def test_filtro_por_categoria(self):
+        response = self.client.get(reverse("catalog:book_list"), {"categoria": self.romance.id})
+        self.assertEqual(self.titles(response), ["Dom Casmurro", "Pride and Prejudice"])
+
+    def test_filtro_por_idioma_e_ano(self):
+        # "português" em minúsculas: o filtro __iexact ignora maiúsculas
+        response = self.client.get(reverse("catalog:book_list"), {"idioma": "português", "ano_min": "1900"})
+        self.assertEqual(self.titles(response), ["Python Fluente"])
+
+    def test_ordenar_por_edicao_mais_recente(self):
+        response = self.client.get(reverse("catalog:book_list"), {"ordenar": "recent"})
+        self.assertEqual(self.titles(response), ["Python Fluente", "Dom Casmurro", "Pride and Prejudice"])
+
+    def test_busca_entra_no_historico(self):
+        self.client.get(reverse("catalog:book_list"), {"q": "python"})
+        busca = SearchQuery.objects.get(user=self.user)  # get falharia se não houvesse exatamente uma
+        self.assertEqual(busca.q, "python")
+
+    def test_abrir_a_lista_sem_filtros_nao_gera_historico(self):
+        self.client.get(reverse("catalog:book_list"))
+        self.assertEqual(SearchQuery.objects.count(), 0)
+
+    def test_exportar_csv_respeita_os_filtros(self):
+        response = self.client.get(reverse("catalog:export_books", args=["csv"]), {"q": "python"})
+        conteudo = response.content.decode("utf-8")  # bytes -> texto
+        self.assertEqual(response["Content-Type"], "text/csv; charset=utf-8")
+        self.assertIn("Python Fluente", conteudo)
+        self.assertNotIn("Dom Casmurro", conteudo)
+
+    def test_exportar_excel(self):
+        response = self.client.get(reverse("catalog:export_books", args=["xlsx"]))
+        self.assertEqual(response.status_code, 200)
+        # Todo arquivo .xlsx é, por dentro, um arquivo ZIP, e arquivos ZIP começam com "PK"
+        self.assertTrue(response.content.startswith(b"PK"))
+
+    def test_sugestoes_devolvem_json(self):
+        response = self.client.get(reverse("catalog:book_suggestions"), {"q": "mach"})
+        self.assertEqual(response.json(), {"suggestions": ["Machado de Assis"]})
