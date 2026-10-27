@@ -28,4 +28,9 @@ urlpatterns = [
     path("equipe/atrasados/", views.overdue_loans, name="overdue_loans"),
     path("equipe/livros/<int:book_id>/leitores/", views.book_borrowers, name="book_borrowers"),
     path("equipe/emprestimos/<int:loan_id>/devolver/", views.staff_mark_returned, name="staff_mark_returned"),
+    # Relatórios. <slug:...> aceita letras, números, hífen e sublinhado (ex.: "populares")
+    path("equipe/relatorios/", views.reports_index, name="reports_index"),
+    path("equipe/relatorios/<slug:slug>/", views.report_detail, name="report_detail"),
+    path("equipe/relatorios/<slug:slug>/<str:file_format>/", views.report_export, name="report_export"),
 ]
+

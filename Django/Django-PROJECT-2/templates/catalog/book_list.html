@@ -53,6 +53,7 @@
     {# request.GET.urlencode repete os filtros atuais no link: o arquivo traz o mesmo resultado da tela #}
     <a class="btn" href="{% url 'catalog:export_books' 'csv' %}?{{ request.GET.urlencode }}">Baixar CSV</a>
     <a class="btn" href="{% url 'catalog:export_books' 'xlsx' %}?{{ request.GET.urlencode }}">Baixar Excel</a>
+    <a class="btn" href="{% url 'catalog:export_books' 'pdf' %}?{{ request.GET.urlencode }}">Baixar PDF</a>
   </div>
 
   {# Tabela com os livros da página atual #}

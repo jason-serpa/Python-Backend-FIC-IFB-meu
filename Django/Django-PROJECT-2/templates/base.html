@@ -99,6 +99,7 @@
         {# Links que só a equipe (is_staff) enxerga #}
         {% if user.is_staff %}
           <a href="{% url 'catalog:overdue_loans' %}">Atrasados</a>
+          <a href="{% url 'catalog:reports_index' %}">Relatórios</a>
           <a href="{% url 'admin:index' %}">Admin</a>
         {% endif %}
       {% endif %}

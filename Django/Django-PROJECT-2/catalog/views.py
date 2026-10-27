@@ -1,4 +1,4 @@
-import csv  # módulo do Python para escrever arquivos CSV
+
 from datetime import timedelta  # representa um intervalo de tempo (ex.: 14 dias)
 from functools import wraps  # ajuda a escrever decorators
 
@@ -8,13 +8,15 @@ from django.contrib.auth.decorators import login_required
 from django.core.exceptions import PermissionDenied  # gera a resposta 403 (proibido)
 from django.core.paginator import Paginator  # divide listas em páginas
 from django.db.models import Avg, Count, F, Q  # ferramentas para montar consultas (Avg = média)
-from django.http import Http404, HttpResponse, JsonResponse
+from django.http import Http404, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.utils import timezone
 from django.views.decorators.http import require_POST
 
+from .exporters import EXPORTERS  # funções que geram CSV, Excel e PDF
 from .forms import ReviewForm, SignUpForm
 from .models import Book, Category, Loan, Review, SearchQuery
+from .reports import REPORTS  # os relatórios da equipe
 
 LOAN_DAYS = 14  # prazo padrão de empréstimo, em dias
 BOOKS_PER_PAGE = 10  # quantos livros aparecem por página
@@ -150,48 +152,23 @@ def search_history(request):
     searches = request.user.searches.all()[:50]
     return render(request, "catalog/search_history.html", {"searches": searches})
 
-
 @login_required
 def export_books(request, file_format):
-    """Baixa o resultado da busca atual em CSV ou Excel (mesmos filtros da listagem)."""
+    """Baixa o resultado da busca atual em CSV, Excel ou PDF (mesmos filtros da listagem)."""
+    # Só aceitamos os formatos que existem no dicionário EXPORTERS
+    if file_format not in EXPORTERS:
+        raise Http404("Formato desconhecido.")
+
     books = filter_books(request.GET)
-    header = ["Título", "Autor(a)", "ISBN", "Categoria", "Idioma", "Ano", "Disponíveis", "Total"]
+    headers = ["Título", "Autor(a)", "ISBN", "Categoria", "Idioma", "Ano", "Disponíveis", "Total"]
     # Uma lista por livro, na mesma ordem do cabeçalho
     rows = [
         [b.title, b.author, b.isbn, b.category.name if b.category else "",
          b.language, b.edition_year or "", b.available, b.copies_total]
         for b in books
     ]
-
-    if file_format == "csv":
-        # content_type diz ao navegador o tipo do arquivo;
-        # Content-Disposition "attachment" manda baixar em vez de abrir na tela
-        response = HttpResponse(content_type="text/csv; charset=utf-8")
-        response["Content-Disposition"] = 'attachment; filename="livros.csv"'
-        response.write("\ufeff")  # "BOM": faz o Excel reconhecer os acentos
-        writer = csv.writer(response, delimiter=";")  # ; é o separador que o Excel em português espera
-        writer.writerow(header)
-        writer.writerows(rows)
-        return response
-
-    if file_format == "xlsx":
-        from openpyxl import Workbook  # importado aqui: só é necessário nesta parte
-
-        workbook = Workbook()  # planilha nova
-        sheet = workbook.active  # a primeira aba
-        sheet.title = "Livros"
-        sheet.append(header)  # append adiciona uma linha
-        for row in rows:
-            sheet.append(row)
-        response = HttpResponse(
-            content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-        )
-        response["Content-Disposition"] = 'attachment; filename="livros.xlsx"'
-        workbook.save(response)  # grava a planilha direto na resposta
-        return response
-
-    # Qualquer outro formato na URL: página não encontrada
-    raise Http404("Formato desconhecido.")
+    export = EXPORTERS[file_format]  # escolhe a função certa (csv_response, xlsx_response...)
+    return export("livros", "Acervo da biblioteca", headers, rows)
 
 
 @login_required
@@ -384,3 +361,45 @@ def staff_mark_returned(request, loan_id):
         loan.mark_returned()
         messages.success(request, f"Devolução de “{loan.book.title}” ({loan.user}) registrada.")
     return redirect("catalog:overdue_loans")
+
+
+# ---------- Relatórios (equipe) ----------
+
+
+@staff_required
+def reports_index(request):
+    """Página com a lista de relatórios disponíveis."""
+    # Pares (pedaço da URL, título) para o template montar os links
+    reports = [(slug, title) for slug, (title, _) in REPORTS.items()]
+    return render(request, "catalog/reports_index.html", {"reports": reports})
+
+
+def get_report(slug):
+    """Procura o relatório pelo pedaço da URL e já gera os dados.
+
+    Não é uma view (não recebe request): é uma função auxiliar usada pelas duas views abaixo.
+    """
+    if slug not in REPORTS:
+        raise Http404("Relatório não encontrado.")
+    title, build = REPORTS[slug]
+    return title, build()  # agora sim a função do relatório é chamada (com parênteses)
+
+
+@staff_required
+def report_detail(request, slug):
+    """Mostra um relatório na tela, com botões para baixar."""
+    title, data = get_report(slug)
+    # **data espalha headers e rows no contexto
+    context = {"slug": slug, "title": title, **data}
+    return render(request, "catalog/report_detail.html", context)
+
+
+@staff_required
+def report_export(request, slug, file_format):
+    """Baixa um relatório em CSV, Excel ou PDF."""
+    if file_format not in EXPORTERS:
+        raise Http404("Formato desconhecido.")
+    title, data = get_report(slug)
+    # Nome do arquivo com a data de hoje, ex.: relatorio-populares-2026-09-24
+    filename = f"relatorio-{slug}-{timezone.localdate():%Y-%m-%d}"
+    return EXPORTERS[file_format](filename, title, data["headers"], data["rows"])

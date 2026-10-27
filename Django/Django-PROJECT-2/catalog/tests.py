@@ -286,3 +286,60 @@ class ReviewTests(TestCase):
         response = self.client.post(reverse("catalog:delete_review", args=[review.id]))
         self.assertEqual(response.status_code, 404)
         self.assertTrue(Review.objects.filter(pk=review.pk).exists())  # continua lá
+
+class ReportTests(TestCase):
+    """Testes da Aula 6: relatórios e exportação."""
+
+    def setUp(self):
+        self.equipe = User.objects.create_user("bibliotecaria", password="senha-forte-123", is_staff=True)
+        self.leitor = User.objects.create_user("maria", password="senha-forte-123")
+        self.popular = Book.objects.create(title="Dom Casmurro", author="Machado de Assis", isbn="1111111111111")
+        self.outro = Book.objects.create(title="Iracema", author="José de Alencar", isbn="2222222222222")
+        make_loan(self.popular, self.leitor, days=-5).mark_returned()  # empréstimo antigo, já devolvido
+        make_loan(self.popular, self.leitor, days=-2)  # ainda com ela, e atrasado 2 dias
+        make_loan(self.outro, self.leitor)  # em dia
+
+    def test_leitor_comum_nao_ve_relatorios(self):
+        self.client.force_login(self.leitor)
+        response = self.client.get(reverse("catalog:reports_index"))
+        self.assertEqual(response.status_code, 403)
+
+    def test_todos_os_relatorios_abrem(self):
+        from .reports import REPORTS
+
+        self.client.force_login(self.equipe)
+        for slug in REPORTS:
+            # subTest: se um relatório falhar, a mensagem diz qual foi
+            with self.subTest(relatorio=slug):
+                response = self.client.get(reverse("catalog:report_detail", args=[slug]))
+                self.assertEqual(response.status_code, 200)
+
+    def test_livros_populares_em_ordem(self):
+        from .reports import popular_books
+
+        # Os relatórios são funções comuns: dá para testar sem passar por página nenhuma
+        data = popular_books()
+        self.assertEqual(data["rows"][0], ["Dom Casmurro", "Machado de Assis", 2])
+        self.assertEqual(data["rows"][1], ["Iracema", "José de Alencar", 1])
+
+    def test_relatorio_de_atrasados(self):
+        from .reports import overdue_loans
+
+        data = overdue_loans()
+        self.assertEqual(len(data["rows"]), 1)
+        self.assertEqual(data["rows"][0][3], 2)  # quarta coluna: 2 dias de atraso
+
+    def test_exportar_em_todos_os_formatos(self):
+        self.client.force_login(self.equipe)
+        # Como cada tipo de arquivo começa: CSV com o BOM + "Livro", XLSX com "PK", PDF com "%PDF"
+        inicio_esperado = {"csv": "Livro".encode("utf-8-sig"), "xlsx": b"PK", "pdf": b"%PDF"}
+        for file_format, inicio in inicio_esperado.items():
+            with self.subTest(formato=file_format):
+                url = reverse("catalog:report_export", args=["emprestimos", file_format])
+                response = self.client.get(url)
+                self.assertTrue(response.content.startswith(inicio))
+
+    def test_relatorio_inexistente_da_404(self):
+        self.client.force_login(self.equipe)
+        response = self.client.get(reverse("catalog:report_detail", args=["nao-existe"]))
+        self.assertEqual(response.status_code, 404)
