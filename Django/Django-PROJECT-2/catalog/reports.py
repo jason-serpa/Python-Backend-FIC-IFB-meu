@@ -90,6 +90,19 @@ def loans_by_category():
     rows = [[category.name, category.livros, category.emprestimos] for category in categories]
     return {"headers": ["Categoria", "Livros", "Empréstimos"], "rows": rows}
 
+def never_borrowed():
+    """Livros nunca emprestados."""
+    books = (
+        Book.objects.filter(loans__isnull=True)
+        .select_related("category")
+        .order_by("title")
+    )
+    # Com SET_NULL, um livro pode estar sem categoria: mostramos "-" nesse caso
+    rows = [
+        [book.title, book.author, book.category.name if book.category else "-"]
+        for book in books
+    ]
+    return {"headers": ["Título", "Autor(a)", "Categoria"], "rows": rows}
 
 # "Cardápio" de relatórios: pedaço da URL -> (título, função que gera os dados).
 # As funções aparecem sem parênteses: guardamos a função em si, para chamá-la depois.
@@ -99,4 +112,5 @@ REPORTS = {
     "leitores": ("Leitores mais ativos", active_readers),
     "atrasados": ("Empréstimos atrasados", overdue_loans),
     "categorias": ("Empréstimos por categoria", loans_by_category),
+    "nunca-emprestados": ("Livros nunca emprestados", never_borrowed),
 }
